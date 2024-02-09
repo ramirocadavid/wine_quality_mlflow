@@ -1,0 +1,1 @@
+This project develops a set of ML models to forecast the quality of wine, and defines a pipeline using MLflow to track experiments run during the development of the model, package the model's project and deploy it to production.
