@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/h/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/551199785301159211/39a96024a0c4482eafe995830a12099b/artifacts
+end_time: 1707516104555
+entry_point_name: ''
+experiment_id: '551199785301159211'
+lifecycle_stage: active
+run_id: 39a96024a0c4482eafe995830a12099b
+run_name: traveling-snipe-747
+run_uuid: 39a96024a0c4482eafe995830a12099b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707516101437
+status: 3
+tags: []
+user_id: ramiro

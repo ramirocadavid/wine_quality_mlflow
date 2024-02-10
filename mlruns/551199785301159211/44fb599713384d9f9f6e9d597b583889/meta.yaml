@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/h/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/551199785301159211/44fb599713384d9f9f6e9d597b583889/artifacts
+end_time: 1707516156869
+entry_point_name: ''
+experiment_id: '551199785301159211'
+lifecycle_stage: active
+run_id: 44fb599713384d9f9f6e9d597b583889
+run_name: grandiose-stork-677
+run_uuid: 44fb599713384d9f9f6e9d597b583889
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707516153558
+status: 3
+tags: []
+user_id: ramiro

@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/h/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/551199785301159211/fb248c21d679452fba28829213f67c2f/artifacts
+end_time: 1707516065458
+entry_point_name: ''
+experiment_id: '551199785301159211'
+lifecycle_stage: active
+run_id: fb248c21d679452fba28829213f67c2f
+run_name: intrigued-lamb-930
+run_uuid: fb248c21d679452fba28829213f67c2f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707516062439
+status: 3
+tags: []
+user_id: ramiro

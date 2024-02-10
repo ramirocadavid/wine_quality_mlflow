@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/h/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/551199785301159211/84df246292774a219e5ed90c25a8a030/artifacts
+end_time: 1707516172566
+entry_point_name: ''
+experiment_id: '551199785301159211'
+lifecycle_stage: active
+run_id: 84df246292774a219e5ed90c25a8a030
+run_name: worried-crane-428
+run_uuid: 84df246292774a219e5ed90c25a8a030
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707516169681
+status: 3
+tags: []
+user_id: ramiro

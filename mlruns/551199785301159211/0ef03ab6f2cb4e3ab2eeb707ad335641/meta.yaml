@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/h/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/551199785301159211/0ef03ab6f2cb4e3ab2eeb707ad335641/artifacts
+end_time: 1707515495034
+entry_point_name: ''
+experiment_id: '551199785301159211'
+lifecycle_stage: active
+run_id: 0ef03ab6f2cb4e3ab2eeb707ad335641
+run_name: delicate-crab-134
+run_uuid: 0ef03ab6f2cb4e3ab2eeb707ad335641
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707515494235
+status: 3
+tags: []
+user_id: ramiro
