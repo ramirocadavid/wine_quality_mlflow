@@ -52,9 +52,21 @@ if __name__ == "__main__":
     print(f"Tracking URI is {mlflow.get_tracking_uri()}")
 
     # Define and run experiment
-    experiment = mlflow.set_experiment(experiment_name="experiment_1")
+    exp_id = mlflow.create_experiment(
+        name="naive_regressor_3",
+        tags={"version": "v1", "priority": "p1"}
+    )
+    exp = mlflow.get_experiment(exp_id)
+    
+    print(f"Name: {exp.name}")
+    print(f"ID: {exp.experiment_id}")
+    print(f"Artifact location: {exp.artifact_location}")
+    print(f"Tags: {exp.tags}")
+    print(f"Lifecycle stage: {exp.lifecycle_stage}")
+    print(f"Creation timestamp: {exp.creation_time}")
 
-    with mlflow.start_run(experiment_id=experiment.experiment_id):
+
+    with mlflow.start_run(experiment_id=exp_id):
         # Train the model
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
@@ -68,11 +80,18 @@ if __name__ == "__main__":
         print("  R2: %s" % r2)
         
         # Log parameters
-        mlflow.log_param("alpha", alpha)
-        mlflow.log_param("l1_ratio", l1_ratio)
+        mlflow.log_params({
+            'alpha': alpha,
+            'l1_ratio': l1_ratio
+        })
         # Log metrics
-        mlflow.log_metric("rmse", rmse) 
-        mlflow.log_metric("mae", mae)
-        mlflow.log_metric("r2", r2)
+        mlflow.log_metrics(
+            metrics = {
+                'rmse': rmse,
+                'mae': mae,
+                'r2': r2
+            },
+            step=0
+        )
         # Log model
         mlflow.sklearn.log_model(lr, "lr_model")

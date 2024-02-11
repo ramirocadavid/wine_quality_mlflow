@@ -1,0 +1,15 @@
+artifact_uri: /mnt/i/My Drive/2-Ciencia_de_datos/MLOps and MLflow/wine_quality_prediction/wine_quaility_mlflow/620442977358808727/3f5ab0adab8f46669979abb5c20f3a26/artifacts
+end_time: 1707682769701
+entry_point_name: ''
+experiment_id: '620442977358808727'
+lifecycle_stage: active
+run_id: 3f5ab0adab8f46669979abb5c20f3a26
+run_name: unleashed-finch-410
+run_uuid: 3f5ab0adab8f46669979abb5c20f3a26
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707682766502
+status: 3
+tags: []
+user_id: ramiro
