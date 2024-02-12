@@ -1,3 +1,4 @@
+import os
 import warnings
 import argparse
 import logging
@@ -13,6 +14,10 @@ import mlflow
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
+
+# Create project folders
+if not os.path.isdir('data'):
+    os.mkdir('data')
 
 # Get arguments from command
 parser = argparse.ArgumentParser()
@@ -39,24 +44,27 @@ if __name__ == "__main__":
     train, test = train_test_split(data)
 
     # The predicted column is "quality" which is a scalar from [3, 9]
-    train_x = train.drop(["quality"], axis=1)
-    test_x = test.drop(["quality"], axis=1)
+    train_x = train.drop(columns=["quality"])
+    test_x = test.drop(columns=["quality"])
     train_y = train[["quality"]]
     test_y = test[["quality"]]
+    
+    # Store data
+    train_x.to_csv('./data/train_x.csv')
+    test_x.to_csv('./data/test_x.csv')
+    train_y.to_csv('./data/train_y.csv')
+    test_y.to_csv('./data/test_y.csv')
 
+    # Parse argument values
     alpha = args.alpha
     l1_ratio = args.l1_ratio
     
     # Define folder for this project
-    mlflow.set_tracking_uri("./wine_quaility_mlflow")
+    mlflow.set_tracking_uri("")
     print(f"Tracking URI is {mlflow.get_tracking_uri()}")
 
     # Define and run experiment
-    exp_id = mlflow.create_experiment(
-        name="naive_regressor_3",
-        tags={"version": "v1", "priority": "p1"}
-    )
-    exp = mlflow.get_experiment(exp_id)
+    exp = mlflow.set_experiment(experiment_name="naive_regressor")
     
     print(f"Name: {exp.name}")
     print(f"ID: {exp.experiment_id}")
@@ -64,9 +72,8 @@ if __name__ == "__main__":
     print(f"Tags: {exp.tags}")
     print(f"Lifecycle stage: {exp.lifecycle_stage}")
     print(f"Creation timestamp: {exp.creation_time}")
-
-
-    with mlflow.start_run(experiment_id=exp_id):
+    
+    with mlflow.start_run(experiment_id=exp.experiment_id):
         # Train the model
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
@@ -78,7 +85,7 @@ if __name__ == "__main__":
         print("  RMSE: %s" % rmse)
         print("  MAE: %s" % mae)
         print("  R2: %s" % r2)
-        
+
         # Log parameters
         mlflow.log_params({
             'alpha': alpha,
@@ -93,5 +100,7 @@ if __name__ == "__main__":
             },
             step=0
         )
-        # Log model
+        # Log artifacts
+        mlflow.log_artifacts('data/')
         mlflow.sklearn.log_model(lr, "lr_model")
+        print(f"Artifacts location is {mlflow.get_artifact_uri()}")

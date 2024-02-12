@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/i/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/487734233240269068/899eef5232a34c15ac95decdb1d63f85/artifacts
+end_time: 1707709601997
+entry_point_name: ''
+experiment_id: '487734233240269068'
+lifecycle_stage: active
+run_id: 899eef5232a34c15ac95decdb1d63f85
+run_name: colorful-swan-357
+run_uuid: 899eef5232a34c15ac95decdb1d63f85
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707709598400
+status: 3
+tags: []
+user_id: ramiro

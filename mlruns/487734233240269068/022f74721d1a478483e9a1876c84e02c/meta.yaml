@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/i/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/487734233240269068/022f74721d1a478483e9a1876c84e02c/artifacts
+end_time: 1707731394708
+entry_point_name: ''
+experiment_id: '487734233240269068'
+lifecycle_stage: active
+run_id: 022f74721d1a478483e9a1876c84e02c
+run_name: unequaled-hen-88
+run_uuid: 022f74721d1a478483e9a1876c84e02c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707731391051
+status: 3
+tags: []
+user_id: ramiro

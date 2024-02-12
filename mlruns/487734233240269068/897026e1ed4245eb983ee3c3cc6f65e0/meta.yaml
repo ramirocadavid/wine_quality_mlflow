@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/i/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/487734233240269068/897026e1ed4245eb983ee3c3cc6f65e0/artifacts
+end_time: 1707731372030
+entry_point_name: ''
+experiment_id: '487734233240269068'
+lifecycle_stage: active
+run_id: 897026e1ed4245eb983ee3c3cc6f65e0
+run_name: funny-ray-432
+run_uuid: 897026e1ed4245eb983ee3c3cc6f65e0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707731368390
+status: 3
+tags: []
+user_id: ramiro
