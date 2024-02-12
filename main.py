@@ -37,6 +37,8 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     np.random.seed(40)
 
+    ########### Define and log experiments data ###########
+
     # Read the wine-quality csv file from local
     data = pd.read_csv("data/red-wine-quality.csv")
 
@@ -63,44 +65,64 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri("")
     print(f"Tracking URI is {mlflow.get_tracking_uri()}")
 
-    # Define and run experiment
-    exp = mlflow.set_experiment(experiment_name="naive_regressor")
-    
-    print(f"Name: {exp.name}")
-    print(f"ID: {exp.experiment_id}")
-    print(f"Artifact location: {exp.artifact_location}")
-    print(f"Tags: {exp.tags}")
-    print(f"Lifecycle stage: {exp.lifecycle_stage}")
-    print(f"Creation timestamp: {exp.creation_time}")
-    
-    with mlflow.start_run(experiment_id=exp.experiment_id):
-        # Train the model
-        lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
-        lr.fit(train_x, train_y)
+    ########### Run experiments ###########
 
-        # Evaluate model and print results
-        predicted_qualities = lr.predict(test_x)
-        (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
-        print("Elasticnet model (alpha={:f}, l1_ratio={:f}):".format(alpha, l1_ratio))
-        print("  RMSE: %s" % rmse)
-        print("  MAE: %s" % mae)
-        print("  R2: %s" % r2)
+    # Three experiments will be run:
+    #   - Lasso regression (l1_ratio=1)
+    #   - Ridge regression (l1_ratio=0)
+    #   - Elasticnet as mean of Lasso and Ridge (l1_ration=0.5)
+    # Within each experiment, each run will test a different value of the
+    #   regularization term (C).
 
-        # Log parameters
-        mlflow.log_params({
-            'alpha': alpha,
-            'l1_ratio': l1_ratio
-        })
-        # Log metrics
-        mlflow.log_metrics(
-            metrics = {
-                'rmse': rmse,
-                'mae': mae,
-                'r2': r2
-            },
-            step=0
-        )
-        # Log artifacts
-        mlflow.log_artifacts('data/')
-        mlflow.sklearn.log_model(lr, "lr_model")
-        print(f"Artifacts location is {mlflow.get_artifact_uri()}")
+    # Define parameters of experiments and runs
+    exp_l1_ratio = [0, 0.5, 1]
+    run_alpha = [0.001, 0.01, 0.1, 1]
+
+    for l1_ratio in exp_l1_ratio:
+
+        # Define and run experiment
+        exp = mlflow.set_experiment(experiment_name=f"penalty_l{l1_ratio}")
+        
+        print(f"Experiment name: {exp.name}")
+        print(f"ID: {exp.experiment_id}")
+        print(f"Artifact location: {exp.artifact_location}")
+        print(f"Tags: {exp.tags}")
+        print(f"Lifecycle stage: {exp.lifecycle_stage}")
+        print(f"Creation timestamp: {exp.creation_time}")
+        
+        for alpha in run_alpha:
+            with mlflow.start_run(
+                experiment_id=exp.experiment_id, 
+                run_name=f"run_{alpha}"
+            ):
+                # Train the model
+                lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
+                lr.fit(train_x, train_y)
+
+                # Evaluate model and print results
+                predicted_qualities = lr.predict(test_x)
+                (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
+                print("Elasticnet model (alpha={:f}, l1_ratio={:f}):".format(alpha, l1_ratio))
+                print("  RMSE: %s" % rmse)
+                print("  MAE: %s" % mae)
+                print("  R2: %s" % r2)
+
+                # Log parameters
+                mlflow.log_params({
+                    'alpha': alpha,
+                    'l1_ratio': l1_ratio
+                })
+                # Log metrics
+                mlflow.log_metrics(
+                    metrics = {
+                        'rmse': rmse,
+                        'mae': mae,
+                        'r2': r2
+                    },
+                    step=0
+                )
+                # Log artifacts
+                mlflow.log_artifacts('data/')
+                mlflow.sklearn.log_model(lr, "lr_model")
+            print("")
+        print("")
