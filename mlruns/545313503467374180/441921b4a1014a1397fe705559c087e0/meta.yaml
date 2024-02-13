@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/i/My%20Drive/2-Ciencia_de_datos/MLOps%20and%20MLflow/wine_quality_prediction/mlruns/545313503467374180/441921b4a1014a1397fe705559c087e0/artifacts
+end_time: 1707843773466
+entry_point_name: ''
+experiment_id: '545313503467374180'
+lifecycle_stage: active
+run_id: 441921b4a1014a1397fe705559c087e0
+run_name: common-datasets
+run_uuid: 441921b4a1014a1397fe705559c087e0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707843772181
+status: 3
+tags: []
+user_id: ramiro

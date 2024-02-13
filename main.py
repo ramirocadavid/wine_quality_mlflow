@@ -1,17 +1,18 @@
 import os
 import warnings
-import argparse
 import logging
 # Data processing packages 
 import pandas as pd
 import numpy as np
 # ML packages
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import ElasticNet
 # mlflow
 import mlflow
-mlflow.autolog(log_input_examples=True)
+mlflow.sklearn.autolog(log_input_examples=True, max_tuning_runs=20)
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
@@ -19,20 +20,6 @@ logger = logging.getLogger(__name__)
 # Create project folders
 if not os.path.isdir('data'):
     os.mkdir('data')
-
-# Get arguments from command
-parser = argparse.ArgumentParser()
-parser.add_argument("--alpha", type=float, required=False, default=0.5)
-parser.add_argument("--l1_ratio", type=float, required=False, default=0.5)
-args = parser.parse_args()
-
-# Evaluation function
-def eval_metrics(actual, pred):
-    rmse = np.sqrt(mean_squared_error(actual, pred))
-    mae = mean_absolute_error(actual, pred)
-    r2 = r2_score(actual, pred)
-    return rmse, mae, r2
-
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
@@ -43,15 +30,13 @@ if __name__ == "__main__":
     # Read the wine-quality csv file from local
     data = pd.read_csv("data/red-wine-quality.csv")
 
-    # Split the data into training and test sets. (0.75, 0.25) split.
-    train, test = train_test_split(data)
+    # Split the data into training and test sets. (0.8, 0.2) split.
+    train_x, test_x, train_y, test_y = train_test_split(
+        data.drop(columns='quality'),
+        data['quality'], 
+        test_size=0.8
+    )
 
-    # The predicted column is "quality" which is a scalar from [3, 9]
-    train_x = train.drop(columns=["quality"])
-    test_x = test.drop(columns=["quality"])
-    train_y = train[["quality"]]
-    test_y = test[["quality"]]
-    
     # Store data
     train_x.to_csv('./data/train_x.csv')
     test_x.to_csv('./data/test_x.csv')
@@ -64,12 +49,8 @@ if __name__ == "__main__":
                           experiment_id=exp_artifacts.experiment_id):
         mlflow.log_artifacts('./data/')
 
-    # Parse argument values
-    alpha = args.alpha
-    l1_ratio = args.l1_ratio
-    
     # Define folder for this project
-    mlflow.set_tracking_uri("")
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
     print(f"Tracking URI is {mlflow.get_tracking_uri()}")
 
     ########### Run experiments ###########
@@ -81,42 +62,48 @@ if __name__ == "__main__":
     # Within each experiment, each run will test a different value of the
     #   regularization term (C).
 
-    # Define parameters of experiments and runs
-    exp_l1_ratio = [0, 0.5, 1]
-    run_alpha = [0.001, 0.01, 0.1, 1]
-
-    for l1_ratio in exp_l1_ratio:
-
-
-        # Define and run experiment
-        exp = mlflow.set_experiment(experiment_name=f"penalty_l{l1_ratio}")
+    # Define and run experiment
+    exp = mlflow.set_experiment(experiment_name=f"grid-search-cv")
+    
+    print(f"Experiment name: {exp.name}")
+    print(f"ID: {exp.experiment_id}")
+    print(f"Tags: {exp.tags}")
+    print(f"Creation timestamp: {exp.creation_time}")
+    
+    with mlflow.start_run(
+        experiment_id=exp.experiment_id, 
+    ):
+        # Define pipeline
+        pipeline = Pipeline([
+            ('regressor', ElasticNet())
+        ])
         
-        print(f"Experiment name: {exp.name}")
-        print(f"ID: {exp.experiment_id}")
-        print(f"Artifact location: {exp.artifact_location}")
-        print(f"Tags: {exp.tags}")
-        print(f"Lifecycle stage: {exp.lifecycle_stage}")
-        print(f"Creation timestamp: {exp.creation_time}")
-        
-        for alpha in run_alpha:
-            with mlflow.start_run(
-                experiment_id=exp.experiment_id, 
-                run_name=f"run_{alpha}"
-            ):
-                # Train the model
-                lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
-                lr.fit(train_x, train_y)
+        # Define grid search cv estimator 
+        metrics = ['neg_mean_squared_error', 'r2', 'neg_mean_absolute_error']
+        grid_params = [
+            {
+                'regressor': [ElasticNet()],
+                'regressor__alpha': [0.001, 0.01, 0.1, 1],
+                'regressor__l1_ratio': [0.0, 0.25, 0.5, 0.75, 1.0],
+            },
+            {
+                'regressor': [RandomForestRegressor()],
+                'regressor__n_estimators': [50, 100, 300]
+            }
+        ]
+        gs_cv = GridSearchCV(pipeline, 
+                             grid_params, 
+                             scoring=metrics, 
+                             refit='neg_mean_squared_error',
+                             verbose=2)
 
-                # Evaluate model and print results
-                predicted_qualities = lr.predict(test_x)
-                (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
-                print("Elasticnet model (alpha={:f}, l1_ratio={:f}):".format(alpha, l1_ratio))
-                print("  RMSE: %s" % rmse)
-                print("  MAE: %s" % mae)
-                print("  R2: %s" % r2)
+        # Train the model
+        gs_cv.fit(train_x, train_y)
 
-                # Log other data
-                mlflow.log_artifact('data/red-wine-quality.csv')
-                mlflow.set_tags({'run.type': 'prototype'})
-            print("")
-        print("")
+        # Evaluate model and print results
+        predicted_qualities = gs_cv.predict(test_x)
+
+        # Log other data
+        mlflow.log_artifact('data/red-wine-quality.csv')
+        mlflow.set_tags({'run.type': 'prototype'})
+    print("")
