@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import ElasticNet
 # mlflow
 import mlflow
+mlflow.autolog(log_input_examples=True)
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
@@ -57,6 +58,12 @@ if __name__ == "__main__":
     train_y.to_csv('./data/train_y.csv')
     test_y.to_csv('./data/test_y.csv')
 
+    # Log data in a run
+    exp_artifacts = mlflow.set_experiment(experiment_name='common-artifacts')
+    with mlflow.start_run(run_name='common-datasets', 
+                          experiment_id=exp_artifacts.experiment_id):
+        mlflow.log_artifacts('./data/')
+
     # Parse argument values
     alpha = args.alpha
     l1_ratio = args.l1_ratio
@@ -79,6 +86,7 @@ if __name__ == "__main__":
     run_alpha = [0.001, 0.01, 0.1, 1]
 
     for l1_ratio in exp_l1_ratio:
+
 
         # Define and run experiment
         exp = mlflow.set_experiment(experiment_name=f"penalty_l{l1_ratio}")
@@ -107,22 +115,8 @@ if __name__ == "__main__":
                 print("  MAE: %s" % mae)
                 print("  R2: %s" % r2)
 
-                # Log parameters
-                mlflow.log_params({
-                    'alpha': alpha,
-                    'l1_ratio': l1_ratio
-                })
-                # Log metrics
-                mlflow.log_metrics(
-                    metrics = {
-                        'rmse': rmse,
-                        'mae': mae,
-                        'r2': r2
-                    },
-                    step=0
-                )
-                # Log artifacts
-                mlflow.log_artifacts('data/')
-                mlflow.sklearn.log_model(lr, "lr_model")
+                # Log other data
+                mlflow.log_artifact('data/red-wine-quality.csv')
+                mlflow.set_tags({'run.type': 'prototype'})
             print("")
         print("")
